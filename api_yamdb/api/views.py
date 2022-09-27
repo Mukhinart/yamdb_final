@@ -6,8 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-
 from reviews.models import ADMIN, Category, Genre, Review, Title, User
+
 from .filters import TitleFilter
 from .mixins import CreateListDestroyViewSet
 from .permissions import IsAdmin, IsAdminModAuthorOrReading, IsAdminOrReading
