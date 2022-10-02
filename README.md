@@ -7,12 +7,15 @@
 Проект YaMDb собирает отзывы (**Review**) пользователей на произведения (**Titles**). Произведения делятся на категории: «Книги», «Фильмы», «Музыка». Список категорий (**Category**) может быть расширен администратором.
 Благодарные или возмущённые читатели оставляют к произведениям текстовые отзывы (**Review**) и выставляют произведению рейтинг. Из пользовательских оценок формируется усреднённая оценка произведения — рейтинг. На одно произведение пользователь может оставить только один отзыв.
 
+**Развернутый проект доступен по адресу - YAMDB_FINAL(http://178.154.203.148)**
+
 ### Технологии
 
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
 ![Gunicorn](https://img.shields.io/badge/gunicorn-%298729.svg?style=for-the-badge&logo=gunicorn&logoColor=white)
+[![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white))
 ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
 ![DjangoREST](https://img.shields.io/badge/DJANGO-REST-ff1709?style=for-the-badge&logo=django&logoColor=white&color=ff1709&labelColor=gray)
 ![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
@@ -21,7 +24,7 @@
 
 [Docker](https://docs.docker.com/engine/install/)
 
-### Инструкция по запуску проекта для Windows:
+### Инструкция по развертыванию приложения:
 
 - Склонируйте проект из репозитория:
 
@@ -29,48 +32,60 @@
 $ git clone https://github.com/Mukhinart/yamdb_final.git
 ```
 
-- Установите и активируйте виртуальное окружение (для Windows):
+- Выполните вход на удаленный сервер
 
+- Установите DOCKER на сервер:
 ```sh
-python -m venv venv 
-source venv/Scripts/activate
-python -m pip install --upgrade pip
-``` 
+apt install docker.io 
+```
 
-- Установите зависимости из файла requirements.txt:
-
+- Установитe docker-compose на сервер:
 ```sh
-pip install -r requirements.txt
-``` 
-- **Для запуска следующих команд перейдите в папку** ```...yamdb_final/infra/```
+curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+```
+
+- Отредактируйте конфигурацию сервера NGNIX:
+```sh
+Локально измените файл ```..infra/nginx.conf``` - замените данные в строке server_name на IP-адрес удаленного сервера
+```
+
+- Скопируйте файлы docker-compose.yml и nginx.conf из директории ```../infra/``` на удаленный сервер:
+```sh
+scp docker-compose.yml <username>@<host>:/home/<username>/docker-compose.yaml
+scp nginx.conf <username>@<host>:/home/<username>/nginx.conf
+```
+- Создайте переменные окружения (указаны в файле ../infra/env.example) и добавьте их в Secrets GitHub Actions
+
+- **Запуск docker-контейнеров:**
 
 - Запустите приложение в контейнерах:
 
 ```sh
-docker-compose up -d --build
+sudo docker-compose up -d --build
 ```
 
 - Выполните миграции:
 
 ```sh
-docker-compose exec web python manage.py migrate
+sudo docker-compose exec web python manage.py migrate
 ```
 
 - Создайте суперпользователя:
 
 ```sh
-docker-compose exec web python manage.py createsuperuser
+sudo docker-compose exec web python manage.py createsuperuser
 ```
 
 - Выполните команду для сбора статики:
 
 ```sh
-docker-compose exec web python manage.py collectstatic --no-input
+sudo docker-compose exec web python manage.py collectstatic --no-input
 ```
 
 - Команда для заполнения тестовыми данными:
 ```sh
-cd api_yamdb && python manage.py loaddata ../infra/fixtures.json
+sudo docker-compose exec web python manage.py fixtures.json
 ```
 
 ### Команда для остановки приложения в контейнере:
@@ -108,8 +123,6 @@ docker-compose down -v
 **Администратор Django** — те же права, что и у роли Администратор.
 
 ### Алгоритм регистрации пользователей
-
-Запросы необходимо отправлять на IP-адрес - 178.154.203.148
 
 Для добавления нового пользователя нужно отправить POST-запрос на эндпоинт:
 
@@ -162,7 +175,7 @@ POST /api/v1/users/
 
 ```sh
 При указании параметров 'limit' и 'offset' выдача работает с пагинацией.
-GET api/v1/categories/ - получить список всех категорий.
+GET /api/v1/categories/ - получить список всех категорий.
 GET /api/v1/genres/ - получить список всех жанров.
 GET /api/v1/titles/ - получить список всех произведений.
 GET /api/titles/{title_id}/reviews/ - получение списка отзывов по id произведения.
