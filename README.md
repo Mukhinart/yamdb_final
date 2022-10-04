@@ -47,7 +47,7 @@ chmod +x /usr/local/bin/docker-compose
 
 - Отредактируйте конфигурацию сервера NGNIX:
 ```sh
-Локально измените файл ```..infra/nginx.conf``` - замените данные в строке server_name на IP-адрес удаленного сервера
+Локально измените файл ..infra/nginx.conf - замените данные в строке server_name на IP-адрес удаленного сервера
 ```
 
 - Скопируйте файлы docker-compose.yml и nginx.conf из директории ../infra/ на удаленный сервер:
