@@ -50,7 +50,7 @@ chmod +x /usr/local/bin/docker-compose
 Локально измените файл ```..infra/nginx.conf``` - замените данные в строке server_name на IP-адрес удаленного сервера
 ```
 
-- Скопируйте файлы docker-compose.yml и nginx.conf из директории ```../infra/``` на удаленный сервер:
+- Скопируйте файлы docker-compose.yml и nginx.conf из директории ../infra/ на удаленный сервер:
 ```sh
 scp docker-compose.yml <username>@<host>:/home/<username>/docker-compose.yaml
 scp nginx.conf <username>@<host>:/home/<username>/nginx.conf
